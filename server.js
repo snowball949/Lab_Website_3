@@ -156,25 +156,44 @@ app.post('/home/pick_color', function(req, res) {
 });
 
 
-app.get('/team_stats', function(req, res) {
-	var query = 'SELECT * FROM football_games;';
-	db.any(query)
-    	.then(function (rows) {
-        	res.render('pages/team_stats',{
-			my_title: "My Title Here",
-			data: rows,
-		})
 
-    })
-    .catch(function (err) {
-        // display error message in case an error
-        request.flash('error', err);
-        res.render('pages/page_name',{
-			my_title: "My Title Here",
-			data: '',
-		})
-	})
+
+
+
+
+app.get('/team_stats', function(req, res) {
+	var wins = 'SELECT COUNT(home_score) FROM football_games WHERE home_score > away_score;';
+	var losses = 'SELECT COUNT(home_score) FROM football_games WHERE home_score < away_score;';
+	var main = 'SELECT * FROM football_games;';
+	db.task('get-everything', task => {
+    		return task.batch([
+        	  task.any(wins),
+        	  task.any(losses),
+        	  task.any(main)
+                ]);
 })
+.then(data => {
+	res.render('pages/team_stats',{
+			my_title: "Team Stats",
+			winss: data[0],
+			lossess: data[1],
+                        mains: data[2]
+		})
+})
+.catch(error => {
+    // display error message in case an error
+        req.flash('error', error);
+        res.render('pages/team_stats',{
+			my_title: "Error",
+			winss: '',
+			lossess: '',
+			mains: ''
+		 })
+	    });
+});
+
+
+
 
 
 /*Add your other get/post request handlers below here: */
