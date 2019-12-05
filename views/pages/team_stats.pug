@@ -17,30 +17,27 @@ div.container
     tr
       th Home Score
       th Opp. Score
-    each n in football_games
-     tr
-      td #{n.visitor_name}
-      td football_games.home_score
-      td football_games.visitor_score
-      td football_games.game_date
-      td football_games.players
-    //- TODO: Iterate over the football_game table data and display the date, name, home score, and visitor score for each row. Determine the winner and display the winner's name in the last column
-  br
-
+       - if (data)
+         for item in data
+          tr
+           th= item.game_date
+           th= item.visitor_name
+           th= item.home_score
+           th= item.visitor_score
+           if (item.home_score > item.visitor_score)
+              th= "Home"
+           else
+              th= "Away"
+               
   table.table.text-center
-    tr
+     tr
       th Wins
       th Losses
-    tr
-    while (n < 10)
      tr
-      td = visitor_name
-      td = home_score
-      td = visitor_score
-      td = game_date
-      td = players
-    tr
-       
+      - if (wins)
+          th= wins
+          th= losses
+      //- TODO: Iterate over the football_game table data and display the date, name, home score, and visitor score for each row. Determine the winner and display the winner's name in the last column
       //- TODO: Display the total number of wins here. This value should come from your server-side db query.
       //- TODO: Display the total number of losses here. This value should come from your server-side db query.
 
