@@ -161,36 +161,50 @@ app.post('/home/pick_color', function(req, res) {
 
 
 
+
+
+
 app.get('/team_stats', function(req, res) {
-	var wins = 'SELECT COUNT(home_score) FROM football_games WHERE home_score > away_score;';
-	var losses = 'SELECT COUNT(home_score) FROM football_games WHERE home_score < away_score;';
-	var main = 'SELECT * FROM football_games;';
+        var data_track = 'select * from football_games;';
+	var loss_count =  'select count(home_score) from football_games where home_score < visitor_score;';
+	var win_count = 'select count(home_score) from football_games where home_score > visitor_score;';
 	db.task('get-everything', task => {
-    		return task.batch([
-        	  task.any(wins),
-        	  task.any(losses),
-        	  task.any(main)
-                ]);
-})
-.then(data => {
-	res.render('pages/team_stats',{
-			my_title: "Team Stats",
-			winss: data[0],
-			lossess: data[1],
-                        mains: data[2]
-		})
-})
-.catch(error => {
-    // display error message in case an error
-        req.flash('error', error);
-        res.render('pages/team_stats',{
-			my_title: "Error",
-			winss: '',
-			lossess: '',
-			mains: ''
-		 })
-	    });
+        return task.batch([
+            task.any(data_track),
+            task.any(loss_count),
+            task.any(win_count)
+        ]);
+    })
+    .then(info => {
+        console.log("hi")
+        console.log(info[0][0].count)
+        console.log(info[0])
+    	res.render('pages/team_stats',{
+				my_title: "Team Stats",
+                                data: info[0],
+				losses: info[1][0].count,
+				wins: info[2][0].count
+			})
+           
+    })
+    .catch(error => {
+        // display error message in case an error
+            console.log("error")//if this doesn't work for you replace with console.log
+            res.render('pages/team_stats', {
+                my_title: 'Error',
+                losses:'',
+                wins: ''
+            })
+    });
+
 });
+
+
+
+
+
+
+
 
 
 
