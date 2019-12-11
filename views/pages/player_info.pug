@@ -8,35 +8,39 @@ div.container
     div.col-4
       div.card
         //- TODO: Modify the pug code below to conditionally set the image_src
-        - let image_src = '../../resources/img/helmet.jpg'
+        - let image_src = 'Downloads/Lab_Website_3/resources/img/helmet.jpg'
 
-        img.card-img-top#player_img(src= image_src, alt="Football Player")
+        img.card-img-top#player_img(src=player_ID ? query2.img_src : 'Downloads/Lab_Website_3/resources/img/helmet.jpg', alt="Football Player")
         div.card-body.mx-auto
           form.form(action="/player_info/post", method="get")
             select.custom-select(name="player_choice", onchange="this.form.submit()")
               option(selected) Select Player
-              //- TODO: Populate the select with player options. Set the value to the player's id and display the player's name.
+              - if (data)
+                for item in data
+                 option(value= item.id)= item.name
+                 
+   
     div.col-8
       div.table-responsive
         table.table
-          //- TODO: Set the player's information. On select, fill in the player's information in each of the field below. You will need to calculate the average rushing, receiving, and passing yards.
+          - if (information)
           tr
             th Year
-            td ?
+            td= information.year
           tr
             th Major
-            td ?
+            td= information.major
           tr
             th Games Played
-            td ?
+            td= totalgames.count
           tr
-            td Passing Yards:
-            td Avg. Passing Yards:
+            td= "Passing yards: " + information.passing_yards
+            td= "Avg. Passing Yards: " +information.passing_yards/totalgames.count
           tr
-            td Rushing Yards: 
-            td Avg. Rushing Yards:
+            td= "Rushing yards: " + information.rushing_yards 
+            td= "Avg. Rushing Yards: " + information.rushing_yards/totalgames.count
           tr
-            td Receiving Yards:
-            td Avg. Receiving Yards:
+            td= "Receiving yards: " + information.receiving_yards
+            td= "Avg. Receiving Yards: " +information.receiving_yards/totalgames.count
 
 include ../partials/footer.pug
