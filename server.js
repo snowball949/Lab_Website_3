@@ -200,6 +200,61 @@ app.get('/team_stats', function(req, res) {
 });
 
 
+app.get('/player_info', function(req, res) {
+    var query1 = 'select id, name from football_players;';
+    db.any(query1)
+        .then(function (rows) {
+            res.render('pages/player_info',{
+				my_title: "Player Info",
+				data: rows
+			})
+        })
+
+        .catch(function (err) {
+            // display error message in case an error
+            console.log('error', err); //if this doesn't work for you replace with console.log
+            res.render('pages/player_info', {
+                my_title: 'Error',
+                data: ''
+            })
+        })
+     
+});
+
+app.get('/player_info/post', function(req, res) {
+        query1 = 'select id, name from football_players;';
+        query2 = 'select name, year, major, passing_yards, rushing_yards, receiving_yards, img_src from football_players where id = ' +      req.query.player_choice + ';';
+        query3 = 'select count(*) from football_games where ' + req.query.player_choice +' = any(players);';
+	db.task('get-everything', task => {
+        return task.batch([
+            task.any(query1),
+            task.any(query2),
+            task.any(query3)
+        ]);
+    })
+    .then(info => {
+        console.log(info[1][0].year)
+    	res.render('pages/player_info',{
+				my_title: "Player Info",
+                                data: info[0],
+				information: info[1][0],
+				totalgames: info[2][0]
+			})
+     
+           
+    })
+    .catch(error => {
+        // display error message in case an error
+            console.log("error")//if this doesn't work for you replace with console.log
+            res.render('pages/player_info', {
+                my_title: 'Error',
+                data: '',
+	        information: '',
+	        totalgames: ''
+            })
+    });
+
+});
 
 
 
